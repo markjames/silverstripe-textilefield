@@ -1,3 +1,19 @@
+;Behaviour.register({
+	'#Form_EditForm' : {
+		initialize : function() {
+			this.observeMethod('PageLoaded', this.adminPageHandler);
+			this.adminPageHandler();
+		},
+		adminPageHandler : function() {
+			// Place your custom code here.
+			(function($){
+				jQuery('textarea.TextileEditorField').each(function() {
+					convertInputToTextileEditorField(jQuery(this));
+				})
+			 })(jQuery);
+		}
+	}
+});
 function convertInputToTextileEditorField( field ) {
 	var $ = jQuery;
 	var $field = $(field);
@@ -11,19 +27,3 @@ function convertInputToTextileEditorField( field ) {
 	
 	$field.markItUp(mySettings);
 }
-
-jQuery(document).ready(function() {
-	
-	// Run when page loads
-	jQuery('textarea.TextileEditorField').each(function() {
-		convertInputToTextileEditorField(jQuery(this));
-	})
-
-	// Run when AJAX load completes (i.e. a form is reloaded)
-	jQuery('body').ajaxComplete(function() {
-		jQuery('textarea.TextileEditorField').each(function() {
-			convertInputToTextileEditorField(jQuery(this));
-		})
-	});
-
-});

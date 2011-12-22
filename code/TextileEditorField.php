@@ -50,7 +50,24 @@ TEXTILESETTINGS
 		);
 
 	}
-	
+
+	function FieldHolder() {
+
+		$id = $this->id();
+
+		Requirements::customScript(<<<JS
+			Behaviour.register({
+				'#$id' : {
+					ready : function() {
+						convertInputToTextileEditorField(jQuery('#$id input'));
+					}
+			}
+		});
+JS
+	);
+
+		return parent::FieldHolder();
+	}
 	/**
 	 * @see TextareaField::__construct()
 	 */
