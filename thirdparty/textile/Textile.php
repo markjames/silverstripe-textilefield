@@ -9,8 +9,8 @@
  */
 
 /*
-$HeadURL$
-$LastChangedRevision$
+$HeadURL: http://textpattern.googlecode.com/svn/development/4.x/textpattern/lib/classTextile.php $
+$LastChangedRevision: 3359 $
 */
 
 /*
@@ -356,7 +356,7 @@ class Textile
 	var $max_span_depth = 5;
 
 	var $ver = '2.2.0';
-	var $rev = '$Rev$';
+	var $rev = '$Rev: 3359 $';
 
 	var $doc_root;
 
@@ -420,7 +420,7 @@ class Textile
 			'/(\b ?|\s|^)[([]C[])]/i',              // copyright
 			'/[([]1\/4[])]/',                       // 1/4
 			'/[([]1\/2[])]/',                       // 1/2
-			'/[([]3\/4[])]/',                       // 3/4
+			'/[([]3\/4[])]/',                       // 3/2
 			'/[([]o[])]/',                          // degrees -- that's a small 'oh'
 			'/[([]\+\/-[])]/',                      // plus minus
 		);
@@ -614,7 +614,7 @@ class Textile
 			$o = '';
 			if( $style ) {
 				foreach($style as $s) {
-					$parts = explode(';', $s);
+					$parts = split(';', $s);
 					foreach( $parts as $p ) {
 						$p = trim($p, '; ');
 						if( !empty( $p ) )
@@ -1388,16 +1388,10 @@ class Textile
 	function fImage($m)
 	{
 		list(, $algn, $atts, $url) = $m;
-		$url = htmlspecialchars($url);
 		$atts  = $this->pba($atts);
 		$atts .= ($algn != '')	? ' align="' . $this->iAlign($algn) . '"' : '';
-		if (isset($m[4])) {
-			$m[4] = htmlspecialchars($m[4]);
-			$atts .= ' title="' . $m[4] . '" alt="'	 . $m[4] . '"';
- 		} else {
-			$atts .= ' alt=""';
- 		}
-
+		$atts .= (isset($m[4])) ? ' title="' . $m[4] . '"' : '';
+		$atts .= (isset($m[4])) ? ' alt="'	 . $m[4] . '"' : ' alt=""';
 		$size = false;
 		if ($this->isRelUrl($url))
 			$size = @getimagesize(realpath($this->doc_root.ltrim($url, $this->ds)));

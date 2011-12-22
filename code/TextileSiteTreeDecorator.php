@@ -14,7 +14,7 @@ class TextileSiteTreeDecorator extends DataObjectDecorator {
 		}
 		foreach($toreplace as $f) {
 			$fields->replaceField($f->name,
-				new Textile($f->name, $f->title, $f->rows, $f->cols, $f->value, $f->form)
+				new TextileEditorField($f->name, $f->title, $f->rows, $f->cols, $f->value, $f->form)
 				);
 		}
 	}
