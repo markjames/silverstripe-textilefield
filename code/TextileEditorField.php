@@ -8,46 +8,13 @@ class TextileEditorField extends TextareaField
 	public static function include_js() {
 		
 		Requirements::clear('textilefield/javascript/TextileEditorField.js');
-		Requirements::clear('textilefield/javascript/TextileEditorField.js');
-		Requirements::javascript('textilefield/javascript/TextileEditorField.js');
-		
+		Requirements::javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
 		Requirements::css('textilefield/thirdparty/markitup/sets/textile/style.css');
 		Requirements::css('textilefield/css/TextileEditorField.css');
 
 		Requirements::javascript('textilefield/thirdparty/markitup/jquery.markitup.js');
-		self::include_js_config();
 		
 		Requirements::javascript('textilefield/javascript/TextileEditorField.js');
-
-	}
-
-	public static function include_js_config() {
-
-		Requirements::customScript( <<<TEXTILESETTINGS
-
-		mySettings = {
-			previewParserPath:	'', // path to your Textile parser
-			onShiftEnter:		{keepDefault:false, replaceWith:'\\n\\n'},
-			markupSet: [
-				{className:"markitup-button-heading-2", name:'Heading 2', key:'2', openWith:'h2(!(([![Class]!]))!). ', placeHolder:'Your title here...' },
-				{className:"markitup-button-heading-3", name:'Heading 3', key:'3', openWith:'h3(!(([![Class]!]))!). ', placeHolder:'Your title here...' },
-				{className:"markitup-button-heading-4", name:'Heading 4', key:'4', openWith:'h4(!(([![Class]!]))!). ', placeHolder:'Your title here...' },
-				{className:"markitup-button-heading-5", name:'Heading 5', key:'5', openWith:'h5(!(([![Class]!]))!). ', placeHolder:'Your title here...' },
-				{className:"markitup-button-heading-6", name:'Heading 6', key:'6', openWith:'h6(!(([![Class]!]))!). ', placeHolder:'Your title here...' },
-				{separator:'---------------' },
-				{className:"markitup-button-bold", name:'Bold', key:'B', closeWith:'*', openWith:'*'},
-				{className:"markitup-button-italic", name:'Italic', key:'I', closeWith:'_', openWith:'_'},
-				{separator:'---------------' },
-				{className:"markitup-button-list-bullet", name:'Bulleted list', openWith:'(!(* |!|*)!)'},
-				{className:"markitup-button-list-numeric", name:'Numeric list', openWith:'(!(# |!|#)!)'}, 
-				{separator:'---------------' },
-				{className:"markitup-button-link", name:'Link', openWith:'"', closeWith:'([![Title]!])":[![Link:!:http://]!]', placeHolder:'Your text to link here...' },
-				{className:"markitup-button-quotes", name:'Quotes', openWith:'bq(!(([![Class]!]))!). '}
-			]
-		}
-TEXTILESETTINGS
-
-		);
 
 	}
 
