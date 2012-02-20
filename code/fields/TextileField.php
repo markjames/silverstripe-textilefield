@@ -20,7 +20,7 @@ class TextileField extends DBField implements CompositeDBField {
 	 */
 	static $composite_db = array(
 		'Source' => 'Text',
-		'Cache' => 'Text'
+		'' => 'Text'
 	);
 
 	/**
@@ -57,15 +57,15 @@ class TextileField extends DBField implements CompositeDBField {
 
 			$this->Source = $record[$this->name . 'Source'];
 
-			if( isset($record[$this->name . 'Cache']) ) {
-				$this->Cache = $record[$this->name . 'Cache'];
+			if( isset($record[$this->name . '']) ) {
+				$this->Cache = $record[$this->name . ''];
 			} else {
 				$this->Cache = '';
 			}
 
 		} else if (is_array($value)) {
 			$this->Source = $value['Source'];
-			$this->Cache = $value['Cache'];
+			$this->Cache = $value[''];
 		} else if (is_string($value)) {
 			$this->Source = $value;
 			$this->Cache = '';
@@ -108,7 +108,7 @@ class TextileField extends DBField implements CompositeDBField {
 
 		$source = (string)$this->Source;
 		$manipulation['fields'][$this->name.'Source'] = $this->prepValueForDB($source);
-		$manipulation['fields'][$this->name.'Cache'] = $this->prepValueForDB($this->getCache());
+		$manipulation['fields'][$this->name.''] = $this->prepValueForDB($this->getCache());
 
 	}
 	
@@ -151,7 +151,7 @@ class TextileField extends DBField implements CompositeDBField {
 			
 			// Recalculate cached output
 			$this->Cache = '';
-			$dataObject->{$fieldName.'Cache'} = $this->getCache();
+			$dataObject->{$fieldName.''} = $this->getCache();
 		}
 	}
 

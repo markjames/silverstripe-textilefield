@@ -5,6 +5,14 @@
  */
 class TextileSiteTreeDecorator extends DataObjectDecorator {
 
+	public function extraStatics() {
+		return array(
+			'db' => array(
+				'Content' => 'TextileField'
+			)
+		);
+	}
+
 	public function updateCMSFields(&$fields) {
 		$toreplace = array();
 		foreach($fields->dataFields() as $f) {
