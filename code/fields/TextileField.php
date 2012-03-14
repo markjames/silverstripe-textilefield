@@ -198,4 +198,99 @@ class TextileField extends DBField implements CompositeDBField {
 	public function forTemplate() {
 		return $this->getCache();
 	}
+	
+	public function Summary($maxWords = 50){
+		// get first sentence?
+		// this needs to be more robust
+		$data = Convert::xml2raw( $this->Source /*, true*/ );
+		
+		if( !$data )
+			return "";
+		
+		// grab the first paragraph, or, failing that, the whole content
+		if( strpos( $data, "\n\n" ) )
+			$data = substr( $data, 0, strpos( $data, "\n\n" ) );
+			
+		$sentences = explode( '.', $data );	
+		
+		$count = count( explode( ' ', $sentences[0] ) );
+		
+		// if the first sentence is too long, show only the first $maxWords words
+		if( $count > $maxWords ) {
+			return implode( ' ', array_slice( explode( ' ', $sentences[0] ), 0, $maxWords ) ).'...';
+		}
+		// add each sentence while there are enough words to do so
+		$result = '';
+		do {
+			$result .= trim(array_shift( $sentences )).'.';
+			if(count($sentences) > 0) {
+				$count += count( explode( ' ', $sentences[0] ) );
+			}
+			
+			// Ensure that we don't trim half way through a tag or a link
+			$brokenLink = (substr_count($result,'<') != substr_count($result,'>')) ||
+				(substr_count($result,'<a') != substr_count($result,'</a'));
+			
+		} while( ($count < $maxWords || $brokenLink) && $sentences && trim( $sentences[0] ) );
+		
+		if( preg_match( '/<a[^>]*>/', $result ) && !preg_match( '/<\/a>/', $result ) )
+			$result .= '</a>';
+		
+		$result = Convert::raw2xml( $result );
+		return $result;
+	}
+	
+	
+	/**
+	 * Perform context searching to give some context to searches, optionally
+	 * highlighting the search term.
+	 * 
+	 * @param int $characters Number of characters in the summary
+	 * @param boolean $string Supplied string ("keywords")
+	 * @param boolean $striphtml Strip HTML?
+	 * @param boolean $highlight Add a highlight <span> element around search query?
+	 * @param String prefix text
+	 * @param String suffix 
+	 * 
+	 * @return string
+	 */
+	function ContextSummary($characters = 500, $string = false, $striphtml = true, $highlight = true, $prefix = "... ", $suffix = "...") {
+
+		if(!$string) $string = $_REQUEST['Search'];	// Use the default "Search" request variable (from SearchForm)
+
+		// Remove HTML tags so we don't have to deal with matching tags
+		$text = $striphtml ? strip_tags($this->Source) : $this->Source;
+		
+		// Find the search string
+		$position = (int) stripos($text, $string);
+		
+		// We want to search string to be in the middle of our block to give it some context
+		$position = max(0, $position - ($characters / 2));
+
+		if($position > 0) {
+			// We don't want to start mid-word
+			$position = max((int) strrpos(substr($text, 0, $position), ' '), (int) strrpos(substr($text, 0, $position), "\n"));
+		}
+
+		$summary = substr($text, $position, $characters);
+		$stringPieces = explode(' ', $string);
+		
+		if($highlight) {
+			// Add a span around all key words from the search term as well
+			if($stringPieces) {
+			
+				foreach($stringPieces as $stringPiece) {
+					if(strlen($stringPiece) > 2) {
+						$summary = str_ireplace($stringPiece, "<span class=\"highlight\">$stringPiece</span>", $summary);
+					}
+				}
+			}
+		}
+		$summary = trim($summary);
+		
+		if($position > 0) $summary = $prefix . $summary;
+		if(strlen($this->value) > ($characters + $position)) $summary = $summary . $suffix;
+		
+		return $summary;
+	}
 }
