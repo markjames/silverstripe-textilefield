@@ -188,6 +188,12 @@ class TextileField extends DBField implements CompositeDBField {
 		if( !$this->Cache && $this->Source ) {
 			$textile = new Textile();
 			$this->Cache = $textile->TextileThis($this->Source);
+			
+			//Can't think of nicer way to extend this, suggestions welcome
+			$result = $this->extend("getCache", $this->Cache);
+			if(count($result)){
+				$this->Cache = $result[0];
+			}
 		}
 		return $this->Cache;
 	}
