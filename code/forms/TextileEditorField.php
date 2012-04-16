@@ -22,6 +22,8 @@ class TextileEditorField extends TextareaField
 
 		$id = $this->id();
 
+		self::include_js();
+
 		Requirements::customScript(<<<JS
 			Behaviour.register({
 				'#$id' : {
@@ -42,8 +44,6 @@ JS
 		parent::__construct($name, $title, $rows, $cols, $value, $form);
 		
 		$this->addExtraClass('TextileEditorField');
-		
-		self::include_js();
 	}
 
 	/**
