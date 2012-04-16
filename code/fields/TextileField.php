@@ -185,9 +185,13 @@ class TextileField extends DBField implements CompositeDBField {
 
 	public function getCache() {
 
-		if( !$this->Cache && $this->Source ) {
+		if( !$this->Cache && $this->Source ) {       
+			//Pipe the content through the ShortcodeParser
+			$shortcodeParser = ShortcodeParser::get_active();
+		   	$this->Cache = $shortcodeParser->parse($this->Source);
+			
 			$textile = new Textile();
-			$this->Cache = $textile->TextileThis($this->Source);
+			$this->Cache = $textile->TextileThis($this->Cache);
 			
 			//Can't think of nicer way to extend this, suggestions welcome
 			$result = $this->extend("getCache", $this->Cache);
