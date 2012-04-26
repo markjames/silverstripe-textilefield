@@ -15,7 +15,7 @@ class TextileEditorField extends TextareaField
 		Requirements::javascript('textilefield/thirdparty/markitup/jquery.markitup.js');
 		
 		Requirements::javascript('textilefield/javascript/TextileEditorField.js');
-
+		
 	}
 
 	function FieldHolder() {
@@ -23,8 +23,8 @@ class TextileEditorField extends TextareaField
 		$id = $this->id();
 
 		self::include_js();
-
-		Requirements::customScript(<<<JS
+        
+		$customScript = <<<JS
 			Behaviour.register({
 				'#$id' : {
 					ready : function() {
@@ -32,8 +32,11 @@ class TextileEditorField extends TextareaField
 					}
 			}
 		});
-JS
-	);
+JS;
+
+		Requirements::customScript($customScript);
+;
+		$this->extend("fieldholderjs");
 
 		return parent::FieldHolder();
 	}
