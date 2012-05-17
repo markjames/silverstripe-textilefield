@@ -50,22 +50,11 @@ JS;
 	}
 
 	/**
+	 * @todo add broken link checking
 	 * @return string
 	 */
 	function Field() {
-		// mark up broken links
-		$value  = new SS_HTMLValue($this->value);
-		
-		if($links = $value->getElementsByTagName('a')) foreach($links as $link) {
-			$matches = array();
-			
-			if(preg_match('/\[sitetree_link id=([0-9]+)\]/i', $link->getAttribute('href'), $matches)) {
-				if(!DataObject::get_by_id('SiteTree', $matches[1])) {
-					$class = $link->getAttribute('class');
-					$link->setAttribute('class', ($class ? "$class ss-broken" : 'ss-broken'));
-				}
-			}
-		}
+		$value  = $this->value;
 		
 		return $this->createTag (
 			'textarea',
@@ -78,7 +67,7 @@ JS;
 				'id'      => $this->id(),
 				'name'    => $this->name
 			),
-			htmlentities($value->getContent(), ENT_COMPAT, 'UTF-8')
+			htmlentities((string) $value, ENT_COMPAT, 'UTF-8')
 		);
 	}
 }
