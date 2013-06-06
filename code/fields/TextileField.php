@@ -212,7 +212,7 @@ class TextileField extends DBField implements CompositeDBField {
 	public function Summary($maxWords = 50){
 		// get first sentence?
 		// this needs to be more robust
-		$data = Convert::xml2raw( $this->Source /*, true*/ );
+		$data = Convert::xml2raw( strip_tags($this->forTemplate()) /*, true*/ );
 		
 		if( !$data )
 			return "";
