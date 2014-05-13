@@ -15,7 +15,7 @@ class TextileField extends DBField implements CompositeDBField {
 	 * holds an array of composite field names.
 	 * Don't include the fields "main name",
 	 * it will be prefixed in {@link requireField()}.
-	 *
+	 * 
 	 * @var array $composite_db
 	 */
 	static $composite_db = array(
@@ -35,14 +35,14 @@ class TextileField extends DBField implements CompositeDBField {
 	 * Set the value of this field in various formats.
 	 * Used by {@link DataObject->getField()}, {@link DataObject->setCastedField()}
 	 * {@link DataObject->dbObject()} and {@link DataObject->write()}.
-	 *
+	 * 
 	 * As this method is used both for initializing the field after construction,
 	 * and actually changing its values, it needs a {@link $markChanged}
-	 * parameter.
-	 *
+	 * parameter. 
+	 * 
 	 * @param DBField|array $value
 	 * @param array $record Map of values loaded from the database
-	 * @param boolean $markChanged Indicate wether this field should be marked changed.
+	 * @param boolean $markChanged Indicate wether this field should be marked changed. 
 	 *  Set to FALSE if you are initializing this field after construction, rather
 	 *  than setting a new value.
 	 */
@@ -72,7 +72,7 @@ class TextileField extends DBField implements CompositeDBField {
 		} else {
 			//user_error('Invalid value in '.get_class().'->setValue()', E_USER_ERROR);
 		}
-
+		
 		if( $markChanged ) {
 			$this->isChanged = true;
 		}
@@ -90,7 +90,7 @@ class TextileField extends DBField implements CompositeDBField {
 			DB::requireField($this->tableName, $this->name.$name, $type);
 		}
 	}
-
+	
 	/**
 	 * Add the custom internal values to an INSERT or UPDATE
 	 * request passed through the ORM with {@link DataObject->write()}.
@@ -98,10 +98,10 @@ class TextileField extends DBField implements CompositeDBField {
 	 * these fields are escaped for database insertion, as no
 	 * further processing happens before running the query.
 	 * Use {@link DBField->prepValueForDB()}.
-	 * Ensure to write NULL or empty values as well to allow
+	 * Ensure to write NULL or empty values as well to allow 
 	 * unsetting a previously set field. Use {@link DBField->nullValue()}
 	 * for the appropriate type.
-	 *
+	 * 
 	 * @param array $manipulation
 	 */
 	function writeToManipulation(&$manipulation){
@@ -111,19 +111,19 @@ class TextileField extends DBField implements CompositeDBField {
 		$manipulation['fields'][$this->name.''] = $this->prepValueForDB($this->getCache());
 
 	}
-
+	
 	/**
 	 * Add all columns which are defined through {@link requireField()}
 	 * and {@link $composite_db}, or any additional SQL that is required
 	 * to get to these columns. Will mostly just write to the {@link SQLQuery->select}
 	 * array.
-	 *
+	 * 
 	 * @param SQLQuery $query
 	 */
 	function addToQuery(&$query) {
 		parent::addToQuery($query);
 	}
-
+	
 	/**
 	 * Return array in the format of {@link $composite_db}.
 	 * Used by {@link DataObject->hasOwnDatabaseField()}.
@@ -132,12 +132,12 @@ class TextileField extends DBField implements CompositeDBField {
 	function compositeDatabaseFields(){
 		return self::$composite_db;
 	}
-
+	
 	/**
 	 * Determines if the field has been changed since its initialization.
 	 * Most likely relies on an internal flag thats changed when calling
 	 * {@link setValue()} or any other custom setters on the object.
-	 *
+	 * 
 	 * @return boolean
 	 */
 	function isChanged(){
@@ -148,7 +148,7 @@ class TextileField extends DBField implements CompositeDBField {
 		$fieldName = $this->name;
 		if($fieldName) {
 			$dataObject->{$fieldName.'Source'} = $this->Source;
-
+			
 			// Recalculate cached output
 			$this->Cache = '';
 			$dataObject->{$fieldName.''} = $this->getCache();
@@ -158,7 +158,7 @@ class TextileField extends DBField implements CompositeDBField {
 	/**
 	 * Determines if any of the properties in this field have a value,
 	 * meaning at least one of them is not NULL.
-	 *
+	 * 
 	 * @return boolean
 	 */
 	function hasValue(){
@@ -170,7 +170,7 @@ class TextileField extends DBField implements CompositeDBField {
 	 * for form scaffolding.
 	 *
 	 * Used by {@link SearchContext}, {@link ModelAdmin}, {@link DataObject::scaffoldFormFields()}
-	 *
+	 * 
 	 * @param string $title Optional. Localized title of the generated instance
 	 * @return FormField
 	 */
@@ -178,21 +178,21 @@ class TextileField extends DBField implements CompositeDBField {
 		$field = new TextareaField($this->name);
 		return $field;
 	}
-
+	
 	public function __toString() {
 		return $this->Source;
 	}
 
 	public function getCache() {
 
-		if( !$this->Cache && $this->Source ) {
+		if( !$this->Cache && $this->Source ) {       
 			//Pipe the content through the ShortcodeParser
 			$shortcodeParser = ShortcodeParser::get_active();
 		   	$this->Cache = $shortcodeParser->parse($this->Source);
-
+			
 			$textile = new Textile();
 			$this->Cache = $textile->TextileThis($this->Cache);
-
+			
 			//Can't think of nicer way to extend this, suggestions welcome
 			$result = $this->extend("getCache", $this->Cache);
 			if(count($result)){
@@ -208,23 +208,23 @@ class TextileField extends DBField implements CompositeDBField {
 	public function forTemplate() {
 		return $this->getCache();
 	}
-
+	
 	public function Summary($maxWords = 50){
 		// get first sentence?
 		// this needs to be more robust
 		$data = Convert::xml2raw( $this->Source /*, true*/ );
-
+		
 		if( !$data )
 			return "";
-
+		
 		// grab the first paragraph, or, failing that, the whole content
 		if( strpos( $data, "\n\n" ) )
 			$data = substr( $data, 0, strpos( $data, "\n\n" ) );
-
-		$sentences = explode( '.', $data );
-
+			
+		$sentences = explode( '.', $data );	
+		
 		$count = count( explode( ' ', $sentences[0] ) );
-
+		
 		// if the first sentence is too long, show only the first $maxWords words
 		if( $count > $maxWords ) {
 			return implode( ' ', array_slice( explode( ' ', $sentences[0] ), 0, $maxWords ) ).'...';
@@ -236,44 +236,36 @@ class TextileField extends DBField implements CompositeDBField {
 			if(count($sentences) > 0) {
 				$count += count( explode( ' ', $sentences[0] ) );
 			}
-
+			
 			// Ensure that we don't trim half way through a tag or a link
 			$brokenLink = (substr_count($result,'<') != substr_count($result,'>')) ||
 				(substr_count($result,'<a') != substr_count($result,'</a'));
-
+			
 		} while( ($count < $maxWords || $brokenLink) && $sentences && trim( $sentences[0] ) );
-
+		
 		if( preg_match( '/<a[^>]*>/', $result ) && !preg_match( '/<\/a>/', $result ) )
 			$result .= '</a>';
-
+		
 		$result = Convert::raw2xml( $result );
 		return $result;
-	}
-
-	/**
-	* Return the value of the field with XML tags escaped.
-	* @return string
-	*/
-	function EscapeXML() {
-		return str_replace(array('&','<','>','"'), array('&amp;','&lt;','&gt;','&quot;'), $this->forTemplate() );
 	}
 
 	public function SanitisedSummary($maxWords = 50){
 		// get first sentence?
 		// this needs to be more robust
 		$data = Convert::xml2raw( strip_tags($this->forTemplate()) /*, true*/ );
-
+		
 		if( !$data )
 			return "";
-
+		
 		// grab the first paragraph, or, failing that, the whole content
 		if( strpos( $data, "\n\n" ) )
 			$data = substr( $data, 0, strpos( $data, "\n\n" ) );
-
-		$sentences = explode( '.', $data );
-
+			
+		$sentences = explode( '.', $data );	
+		
 		$count = count( explode( ' ', $sentences[0] ) );
-
+		
 		// if the first sentence is too long, show only the first $maxWords words
 		if( $count > $maxWords ) {
 			return implode( ' ', array_slice( explode( ' ', $sentences[0] ), 0, $maxWords ) ).'...';
@@ -285,32 +277,32 @@ class TextileField extends DBField implements CompositeDBField {
 			if(count($sentences) > 0) {
 				$count += count( explode( ' ', $sentences[0] ) );
 			}
-
+			
 			// Ensure that we don't trim half way through a tag or a link
 			$brokenLink = (substr_count($result,'<') != substr_count($result,'>')) ||
 				(substr_count($result,'<a') != substr_count($result,'</a'));
-
+			
 		} while( ($count < $maxWords || $brokenLink) && $sentences && trim( $sentences[0] ) );
-
+		
 		if( preg_match( '/<a[^>]*>/', $result ) && !preg_match( '/<\/a>/', $result ) )
 			$result .= '</a>';
-
+		
 		$result = Convert::raw2xml( $result );
 		return $result;
 	}
-
-
+	
+	
 	/**
 	 * Perform context searching to give some context to searches, optionally
 	 * highlighting the search term.
-	 *
+	 * 
 	 * @param int $characters Number of characters in the summary
 	 * @param boolean $string Supplied string ("keywords")
 	 * @param boolean $striphtml Strip HTML?
 	 * @param boolean $highlight Add a highlight <span> element around search query?
 	 * @param String prefix text
-	 * @param String suffix
-	 *
+	 * @param String suffix 
+	 * 
 	 * @return string
 	 */
 	function ContextSummary($characters = 500, $string = false, $striphtml = true, $highlight = true, $prefix = "... ", $suffix = "...") {
@@ -319,10 +311,10 @@ class TextileField extends DBField implements CompositeDBField {
 
 		// Remove HTML tags so we don't have to deal with matching tags
 		$text = $striphtml ? strip_tags($this->Source) : $this->Source;
-
+		
 		// Find the search string
 		$position = (int) stripos($text, $string);
-
+		
 		// We want to search string to be in the middle of our block to give it some context
 		$position = max(0, $position - ($characters / 2));
 
@@ -333,11 +325,11 @@ class TextileField extends DBField implements CompositeDBField {
 
 		$summary = substr($text, $position, $characters);
 		$stringPieces = explode(' ', $string);
-
+		
 		if($highlight) {
 			// Add a span around all key words from the search term as well
 			if($stringPieces) {
-
+			
 				foreach($stringPieces as $stringPiece) {
 					if(strlen($stringPiece) > 2) {
 						$summary = str_ireplace($stringPiece, "<span class=\"highlight\">$stringPiece</span>", $summary);
@@ -346,10 +338,10 @@ class TextileField extends DBField implements CompositeDBField {
 			}
 		}
 		$summary = trim($summary);
-
+		
 		if($position > 0) $summary = $prefix . $summary;
 		if(strlen($this->value) > ($characters + $position)) $summary = $summary . $suffix;
-
+		
 		return $summary;
 	}
 }
