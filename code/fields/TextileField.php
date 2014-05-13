@@ -250,6 +250,14 @@ class TextileField extends DBField implements CompositeDBField {
 		return $result;
 	}
 
+	/**
+	* Return the value of the field with XML tags escaped.
+	* @return string
+	*/
+	function EscapeXML() {
+		return str_replace(array('&','<','>','"'), array('&amp;','&lt;','&gt;','&quot;'), $this->forTemplate() );
+	}
+
 	public function SanitisedSummary($maxWords = 50){
 		// get first sentence?
 		// this needs to be more robust
